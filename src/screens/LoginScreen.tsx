@@ -16,12 +16,12 @@ export default function LoginScreen() {
 
   const handleGoogleLogin = () => {
     console.log('Google login pressed')
-    navigation.navigate('Dashboard') // mocked login
+    navigation.navigate('MainTabs')
   }
 
   const handleFacebookLogin = () => {
     console.log('Facebook login pressed')
-    navigation.navigate('Dashboard') // mocked login
+    navigation.navigate('MainTabs')
   }
 
   return (

@@ -15,9 +15,21 @@ import {
 } from 'react-native-paper'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { Formik } from 'formik'
 import * as Yup from 'yup'
 import { Dropdown, MultiSelectDropdown } from 'react-native-paper-dropdown'
+
+type RootStackParamList = {
+  Login: undefined
+  ProfileSetup: undefined
+  MainTabs: undefined
+}
+
+type NavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  'ProfileSetup'
+>
 
 type FormValues = {
   age: string
@@ -59,14 +71,13 @@ const ProfileSchema = Yup.object().shape({
 })
 
 export default function ProfileSetupScreen() {
-  const navigation = useNavigation()
+  const navigation = useNavigation<NavigationProp>()
   const [showGoalDropDown, setShowGoalDropDown] = useState(false)
   const [showSportDropDown, setShowSportDropDown] = useState(false)
 
   const handleSubmit = (values: FormValues) => {
     console.log('Profile Submitted:', values)
-    // @ts-ignore
-    navigation.navigate('Dashboard')
+    navigation.navigate('MainTabs')
   }
 
   return (
@@ -83,7 +94,7 @@ export default function ProfileSetupScreen() {
               initialValues={{
                 age: '',
                 weight: '',
-                sport: [], // start empty array
+                sport: [],
                 goal: '',
               }}
               validationSchema={ProfileSchema}
@@ -92,7 +103,6 @@ export default function ProfileSetupScreen() {
               {({
                 handleChange,
                 handleBlur,
-                handleSubmit,
                 values,
                 errors,
                 touched,
@@ -136,17 +146,10 @@ export default function ProfileSetupScreen() {
                   <View style={styles.dropdownContainer}>
                     <MultiSelectDropdown
                       label="Select Sports"
-                      placeholder="Choose one or more"
                       mode="outlined"
                       options={sportOptions}
                       value={values.sport}
                       onSelect={(list) => setFieldValue('sport', list)}
-                      visible={showSportDropDown}
-                      showDropDown={() => setShowSportDropDown(true)}
-                      onDismiss={() => setShowSportDropDown(false)}
-                      inputProps={{
-                        right: <TextInput.Icon name="menu-down" />,
-                      }}
                     />
                   </View>
                   <HelperText
@@ -162,17 +165,10 @@ export default function ProfileSetupScreen() {
                   <View style={styles.dropdownContainer}>
                     <Dropdown
                       label="Training Frequency"
-                      placeholder="Select frequency"
                       mode="outlined"
                       options={goalOptions}
                       value={values.goal}
                       onSelect={(val) => setFieldValue('goal', val)}
-                      visible={showGoalDropDown}
-                      showDropDown={() => setShowGoalDropDown(true)}
-                      onDismiss={() => setShowGoalDropDown(false)}
-                      inputProps={{
-                        right: <TextInput.Icon name="menu-down" />,
-                      }}
                     />
                   </View>
                   <HelperText
@@ -182,10 +178,9 @@ export default function ProfileSetupScreen() {
                     {errors.goal}
                   </HelperText>
 
-                  {/* Submit */}
                   <Button
                     mode="contained"
-                    onPress={handleSubmit}
+                    onPress={() => handleSubmit(values)}
                     style={styles.button}
                     disabled={!isValid}
                   >
