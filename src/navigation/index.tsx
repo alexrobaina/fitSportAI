@@ -12,6 +12,8 @@ import WorkoutPlanScreen from '../screens/WorkoutPlanScreen'
 import NutritionPlanScreen from '../screens/NutritionPlanScreen'
 import ProgressTrackerScreen from '../screens/ProgressTrackerScreen'
 import SettingsScreen from '../screens/SettingsScreen'
+import WorkoutSessionScreen from '../screens/WorkoutSessionScreen'
+import WorkoutSummaryScreen from '../screens/WorkoutSummaryScreen'
 
 const Stack = createNativeStackNavigator()
 const Tab = createBottomTabNavigator()
@@ -57,20 +59,21 @@ function MainTabs() {
         }}
       />
       <Tab.Screen
-        name="Progress"
-        component={ProgressTrackerScreen}
-        options={{
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="chart-line" size={24} color={color} />
-          ),
-        }}
-      />
-      <Tab.Screen
         name="Settings"
         component={SettingsScreen}
         options={{
           tabBarIcon: ({ color }) => (
             <MaterialCommunityIcons name="cog" size={24} color={color} />
+          ),
+        }}
+      />
+
+      <Tab.Screen
+        name="Progress"
+        component={ProgressTrackerScreen}
+        options={{
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons name="chart-line" size={24} color={color} />
           ),
         }}
       />
@@ -85,9 +88,11 @@ export default function Navigation() {
         initialRouteName="Login"
         screenOptions={{ headerShown: false }}
       >
+        <Stack.Screen name="MainTabs" component={MainTabs} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="ProfileSetup" component={ProfileSetupScreen} />
-        <Stack.Screen name="MainTabs" component={MainTabs} />
+        <Stack.Screen name="WorkoutSession" component={WorkoutSessionScreen} />
+        <Stack.Screen name="WorkoutSummary" component={WorkoutSummaryScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   )

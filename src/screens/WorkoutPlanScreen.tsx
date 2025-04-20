@@ -1,69 +1,98 @@
-import React from 'react'
-import { View, StyleSheet, ScrollView } from 'react-native'
-import {
-  Title,
-  Card,
-  Text,
-  Button,
-  useTheme,
-  Divider,
-} from 'react-native-paper'
+import React, { useState } from 'react'
+import { ScrollView, StyleSheet, View } from 'react-native'
+import { Title, Text, Divider, Button } from 'react-native-paper'
 import { format } from 'date-fns'
+import { MaterialCommunityIcons } from '@expo/vector-icons'
 
-const exercises = [
-  {
-    name: 'Finger Pull-Ups',
-    sets: '3 sets x 10 reps',
-    target: 'Forearms',
-  },
-  {
-    name: 'Plank',
-    sets: '3 sets x 60 sec',
-    target: 'Core',
-  },
-  {
-    name: 'Leg Raises',
-    sets: '3 sets x 15 reps',
-    target: 'Lower Abs',
-  },
-]
+// Components
+import DayBar, { DayItem } from '../components/common/DayBar'
+import WorkoutSummaryCard from '../components/common/WorkoutSummaryCard'
+import ExerciseCard, { Exercise } from '../components/common/ExerciseCard'
+import { useNavigation } from '@react-navigation/native'
 
 export default function WorkoutPlanScreen() {
-  const { colors } = useTheme()
+  const navigation = useNavigation()
+
   const today = format(new Date(), 'eeee, MMMM d')
+
+  const dayData: DayItem[] = [
+    { day: 'Mon', trained: true },
+    { day: 'Tue', trained: false },
+    { day: 'Wed', trained: true },
+    { day: 'Thu', trained: false },
+    { day: 'Fri', trained: false },
+    { day: 'Sat', trained: false },
+    { day: 'Sun', trained: false },
+  ]
+
+  const summary =
+    'Today’s training will improve your grip and core stability for overhang climbing routes.'
+  const tip =
+    'Focus on controlled tempo. Avoid rushing your pull-ups – quality over quantity.'
+
+  const exercises: Exercise[] = [
+    {
+      id: 'ex1',
+      name: 'Finger Pull-Ups',
+      image: 'https://cdn.fitclimbai.com/exercises/finger-pullups.png',
+      sets: 3,
+      reps: 10,
+      rest: '60s',
+      targetMuscle: 'Forearms',
+      equipment: 'Fingerboard',
+    },
+    {
+      id: 'ex2',
+      name: 'Wall Sit',
+      image: 'https://cdn.fitclimbai.com/exercises/wallsit.png',
+      sets: 3,
+      reps: '45 sec',
+      rest: '45s',
+      targetMuscle: 'Quads',
+    },
+    {
+      id: 'ex3',
+      name: 'Plank to Push-Up',
+      image: 'https://cdn.fitclimbai.com/exercises/planktopushup.png',
+      sets: 3,
+      reps: 15,
+      rest: '60s',
+      targetMuscle: 'Core',
+      equipment: 'Mat',
+    },
+  ]
 
   return (
     <ScrollView style={styles.container}>
       <Title style={styles.title}>Your Workout Plan</Title>
       <Text style={styles.date}>{today}</Text>
 
-      {/* Summary Card */}
-      <Card style={styles.summaryCard}>
-        <Card.Content>
-          <Text variant="titleMedium">Climbing Strength & Core</Text>
-          <Text style={styles.summary}>Estimated time: 35 mins</Text>
-          <Text style={styles.summary}>Level: Intermediate</Text>
-        </Card.Content>
-      </Card>
+      <DayBar days={dayData} todayIndex={new Date().getDay() - 1} />
 
-      {/* Divider */}
+      <WorkoutSummaryCard summary={summary} tip={tip} />
+
       <Divider style={{ marginVertical: 20 }} />
 
-      {/* Exercise List */}
       <Title style={styles.sectionTitle}>Exercises</Title>
-      {exercises.map((exercise, idx) => (
-        <Card key={idx} style={styles.exerciseCard}>
-          <Card.Content>
-            <Text variant="titleSmall">{exercise.name}</Text>
-            <Text>{exercise.sets}</Text>
-            <Text style={{ color: colors.primary }}>{exercise.target}</Text>
-          </Card.Content>
-        </Card>
+      {exercises.map((ex) => (
+        <ExerciseCard key={ex.id} exercise={ex} />
       ))}
 
-      {/* Start Button */}
-      <Button mode="contained" style={styles.button} onPress={() => {}}>
-        Start Workout
+      <Button
+        mode="contained"
+        icon={({ size, color }) => (
+          <MaterialCommunityIcons
+            name="play-circle"
+            size={size}
+            color={color}
+          />
+        )}
+        style={styles.startButton}
+        contentStyle={styles.buttonContent}
+        labelStyle={styles.buttonLabel}
+        onPress={() => navigation.navigate('WorkoutSession')}
+      >
+        Start Training
       </Button>
     </ScrollView>
   )
@@ -84,24 +113,23 @@ const styles = StyleSheet.create({
     color: '#666',
     marginBottom: 16,
   },
-  summaryCard: {
-    backgroundColor: '#e3f2fd',
-    borderRadius: 8,
-  },
-  summary: {
-    marginTop: 4,
-  },
   sectionTitle: {
     marginBottom: 10,
     fontSize: 18,
   },
-  exerciseCard: {
-    marginBottom: 10,
-    borderRadius: 8,
+  startButton: {
+    marginTop: 24,
+    marginBottom: 40,
+    alignSelf: 'center',
+    borderRadius: 50,
+    paddingHorizontal: 16,
+    width: '90%',
   },
-  button: {
-    marginVertical: 30,
-    borderRadius: 6,
-    paddingVertical: 8,
+  buttonContent: {
+    height: 50,
+  },
+  buttonLabel: {
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 })

@@ -1,0 +1,69 @@
+import React from 'react'
+import { View, StyleSheet, ScrollView } from 'react-native'
+import { Title, Text, Card, Button } from 'react-native-paper'
+import { format } from 'date-fns'
+import { useWorkoutStore } from '../store/useWorkoutStore'
+import { useNavigation } from '@react-navigation/native'
+
+export default function WorkoutSummaryScreen() {
+  const navigation = useNavigation()
+  const today = new Date().toISOString().split('T')[0]
+  const sessions = useWorkoutStore((state) => state.sessions)
+  const clearSession = useWorkoutStore((state) => state.clearSession)
+
+  const todaySession = sessions.find((s) => s.date === today)
+
+  const handleFinish = () => {
+    clearSession()
+    navigation.navigate('MainTabs', { screen: 'Dashboard' })
+  }
+
+  return (
+    <ScrollView contentContainerStyle={styles.container}>
+      <Title style={styles.title}>Workout Summary</Title>
+      <Text style={styles.date}>{format(new Date(), 'eeee, MMMM d')}</Text>
+
+      {todaySession ? (
+        todaySession.exercises.map((exercise, idx) => (
+          <Card key={idx} style={styles.card}>
+            <Card.Content>
+              <Text variant="titleMedium">{exercise.name}</Text>
+              <Text>✅ {exercise.completedSets} sets completed</Text>
+              <Text>
+                🕒 Completed at:{' '}
+                {format(new Date(exercise.completedAt), 'HH:mm')}
+              </Text>
+            </Card.Content>
+          </Card>
+        ))
+      ) : (
+        <Text style={{ marginTop: 20 }}>No exercises logged today.</Text>
+      )}
+
+      <Button mode="contained" style={styles.button} onPress={handleFinish}>
+        Finish Session
+      </Button>
+    </ScrollView>
+  )
+}
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 20,
+  },
+  title: {
+    fontSize: 26,
+    marginBottom: 10,
+  },
+  date: {
+    color: '#777',
+    marginBottom: 20,
+  },
+  card: {
+    marginBottom: 12,
+  },
+  button: {
+    marginTop: 30,
+    borderRadius: 8,
+  },
+})
