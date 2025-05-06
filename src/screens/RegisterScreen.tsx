@@ -1,38 +1,33 @@
 import React, { useState } from 'react'
-import { useAuth } from '../context/AuthContext'
-
 import {
   View,
   StyleSheet,
-  Image,
-  Platform,
-  KeyboardAvoidingView,
   TextInput,
+  KeyboardAvoidingView,
+  Platform,
   Alert,
 } from 'react-native'
 import { Button, Title, Paragraph } from 'react-native-paper'
 import { useNavigation } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { useEffect } from 'react'
+import { register } from '../services/auth'
 
-export default function LoginScreen() {
+export default function RegisterScreen() {
   const navigation = useNavigation()
-  const { login, userToken } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
-  const handleLogin = async () => {
-    const success = await login(email, password)
-    if (success) {
+  const handleRegister = async () => {
+    try {
+      await register(email, password)
+      Alert.alert('Success', 'Account created!')
       navigation.navigate('MainTabs' as never)
+    } catch (error) {
+      console.error(error)
+      Alert.alert('Error', 'Failed to create account')
+      navigation.navigate('Login' as never)
     }
   }
-
-  useEffect(() => {
-    if (userToken) {
-      navigation.navigate('MainTabs' as never)
-    }
-  }, [userToken])
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -41,45 +36,31 @@ export default function LoginScreen() {
         style={styles.container}
       >
         <View style={styles.inner}>
-          <Image
-            source={require('../../assets/images/logo.png')}
-            style={styles.logo}
-          />
-          <Title style={styles.title}>Welcome to FitClimb AI</Title>
+          <Title style={styles.title}>Create an Account</Title>
           <Paragraph style={styles.subtitle}>
-            Enter your credentials to log in
+            Sign up to start your climbing training
           </Paragraph>
 
           <TextInput
             placeholder="Email"
-            autoCapitalize="none"
-            keyboardType="email-address"
             value={email}
             onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
             style={styles.input}
           />
           <TextInput
             placeholder="Password"
-            secureTextEntry
             value={password}
             onChangeText={setPassword}
+            secureTextEntry
             style={styles.input}
           />
 
           <Button
             mode="contained"
-            onPress={handleLogin}
+            onPress={handleRegister}
             style={styles.button}
-            contentStyle={styles.buttonContent}
-          >
-            Log In
-          </Button>
-
-          <Button
-            mode="contained"
-            style={styles.button}
-            contentStyle={styles.buttonContent}
-            onPress={() => navigation.navigate('Register' as never)}
           >
             Register
           </Button>
@@ -102,21 +83,14 @@ const styles = StyleSheet.create({
   inner: {
     alignItems: 'center',
   },
-  logo: {
-    width: 140,
-    height: 140,
-    marginBottom: 30,
-    resizeMode: 'contain',
-  },
   title: {
-    marginBottom: 8,
+    marginBottom: 10,
     fontSize: 24,
-    textAlign: 'center',
   },
   subtitle: {
-    textAlign: 'center',
     marginBottom: 20,
     color: '#777',
+    textAlign: 'center',
   },
   input: {
     width: '100%',
@@ -129,10 +103,6 @@ const styles = StyleSheet.create({
   },
   button: {
     width: '100%',
-    marginVertical: 6,
-    borderRadius: 6,
-  },
-  buttonContent: {
-    height: 48,
+    marginTop: 10,
   },
 })
