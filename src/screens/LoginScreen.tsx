@@ -17,7 +17,7 @@ import { useEffect } from 'react'
 
 export default function LoginScreen() {
   const navigation = useNavigation()
-  const { login, userToken } = useAuth()
+  const { login, userToken, isLoading } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
@@ -68,6 +68,7 @@ export default function LoginScreen() {
 
           <Button
             mode="contained"
+            loading={isLoading}
             onPress={handleLogin}
             style={styles.button}
             contentStyle={styles.buttonContent}
